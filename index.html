@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Licznik Złotówek</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <img
+        src="https://www.pse.pl/documents/11393/11395/logo_PSE.png"
+        alt="Logo PSE"
+        class="logo"
+      />
+      <h1>Licznik Złotówek</h1>
+    </header>
+    <main>
+      <section class="form-section">
+        <h2>Wprowadź swoje dane:</h2>
+        <form id="salaryForm">
+          <label for="grossSalary">Podaj kwotę brutto (PLN):</label>
+          <input
+            type="password"
+            id="grossSalary"
+            placeholder="Wpisz kwotę brutto"
+            required
+          />
+
+          <label for="startHour">Godzina rozpoczęcia pracy:</label>
+          <input type="time" id="startHour" required />
+
+          <label for="overtime">Praca w nadgodzinach:</label>
+          <select id="overtime">
+            <option value="no" selected>Nie</option>
+            <option value="yes">Tak</option>
+          </select>
+
+          <div id="overtimeHoursWrapper" style="display: none">
+            <label for="overtimeHours">Liczba nadgodzin:</label>
+            <input type="number" id="overtimeHours" min="1" max="4" step="1" />
+          </div>
+
+          <button type="submit">Uruchom licznik</button>
+        </form>
+      </section>
+      <section class="counter-section">
+        <h2>Twój licznik:</h2>
+        <div id="counter-wrapper">
+          <span id="counter">0.00</span>
+          <span class="currency">PLN</span>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <p>&copy; 2025 Polskie Sieci Elektroenergetyczne S.A.</p>
+    </footer>
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,103 @@
+/* style.css */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f2f2f2;
+  color: #333;
+}
+
+header {
+  background-color: #00468c;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.logo {
+  max-width: 150px;
+}
+
+main {
+  padding: 20px;
+}
+
+h1,
+h2 {
+  color: #00468c;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+input,
+select,
+button {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  background-color: #00468c;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #003366;
+}
+
+.counter-section {
+  margin-top: 20px;
+  text-align: center;
+}
+
+footer {
+  background-color: #00468c;
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+}
+/* Podświetlenie licznika */
+.counter-section {
+  margin-top: 20px;
+  text-align: center;
+}
+
+#counter-wrapper {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  background-color: #00468c;
+  color: white;
+  padding: 20px 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  animation: glow 2s infinite alternate;
+}
+
+#counter {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.currency {
+  font-size: 1.5rem;
+}
+
+/* Animacja podświetlenia */
+@keyframes glow {
+  0% {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  100% {
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.8);
+  }
+}
