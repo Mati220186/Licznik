@@ -5,10 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const overtimeHoursWrapper = document.getElementById("overtimeHoursWrapper");
   let intervalId;
 
-  // Funkcja sprawdzająca, czy dziś jest weekend lub święto
-  const isWeekendOrHoliday = () => {
-    const now = new Date();
-    const dayOfWeek = now.getDay(); // 0 = niedziela, 6 = sobota
+  // Funkcja obliczająca liczbę dni roboczych w danym miesiącu
+  const calculateWorkdays = (year, month) => {
     const publicHolidays = [
       "01-01", // Nowy Rok
       "05-01", // Święto Pracy
@@ -18,8 +16,26 @@ document.addEventListener("DOMContentLoaded", () => {
       "12-25", // Boże Narodzenie (1. dzień)
       "12-26", // Boże Narodzenie (2. dzień)
     ];
-    const today = now.toISOString().slice(5, 10);
-    return dayOfWeek === 0 || dayOfWeek === 6 || publicHolidays.includes(today);
+    let workdays = 0;
+
+    // Iteracja po wszystkich dniach miesiąca
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(year, month, day);
+      const dayOfWeek = date.getDay();
+      const formattedDate = date.toISOString().slice(5, 10);
+
+      // Dodajemy tylko dni robocze (poniedziałek-piątek) i niebędące świętami
+      if (
+        dayOfWeek !== 0 &&
+        dayOfWeek !== 6 &&
+        !publicHolidays.includes(formattedDate)
+      ) {
+        workdays++;
+      }
+    }
+
+    return workdays;
   };
 
   // Obsługa pola wyboru nadgodzin
@@ -35,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
   salaryForm.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    // Pobieranie danych
+    // Pobieranie danych z formularza
     const grossSalary = parseFloat(
       document.getElementById("grossSalary").value
     );
@@ -54,14 +70,18 @@ document.addEventListener("DOMContentLoaded", () => {
     // Walidacja liczby nadgodzin (maksymalnie 5)
     if (overtimeHours > 5) {
       alert("Maksymalna liczba nadgodzin to 5!");
-      overtimeHours = 5; // Przycinanie nadgodzin do limitu
+      overtimeHours = 5;
     }
 
     // Obliczenia podstawowe
-    const hourlyRate = grossSalary / (8 * 5 * 4); // Zakładając 4 tygodnie pracy w miesiącu
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth(); // Obecny miesiąc
+    const workdays = calculateWorkdays(year, month);
+    const hourlyRate = grossSalary / (workdays * 8); // Stawka godzinowa netto
     const overtimeRate1 = hourlyRate * 1.5; // Dodatek 50% za pierwsze 2 nadgodziny
     const overtimeRate2 = hourlyRate * 2; // Dodatek 100% za kolejne nadgodziny
-    const weekendRate = hourlyRate * 3; // Dodatek 300% za weekendy/święta
+    const weekendRate = hourlyRate * 3; // Stawka 300% za weekendy/święta
 
     const startHourInMinutes =
       parseInt(startHour.split(":")[0], 10) * 60 +
@@ -83,12 +103,13 @@ document.addEventListener("DOMContentLoaded", () => {
         nowInMinutes <= workEndInMinutes
       ) {
         const elapsedMinutes = nowInMinutes - startHourInMinutes;
-        let baseEarned = 0;
 
-        // Uwzględnienie weekendów/świąt
-        const isWeekend = isWeekendOrHoliday();
+        // Obliczanie podstawowej wypłaty
+        const isWeekend =
+          now.getDay() === 0 || now.getDay() === 6 || isPublicHoliday(now);
+        let baseEarned = 0;
         if (isWeekend) {
-          baseEarned = (elapsedMinutes / 60) * weekendRate; // 300% stawki za każdą godzinę
+          baseEarned = (elapsedMinutes / 60) * weekendRate; // 300% stawki w weekend/święto
         } else {
           baseEarned = (elapsedMinutes / 60) * hourlyRate; // 100% stawki
         }
@@ -96,8 +117,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // Obliczanie nadgodzin
         let overtimeEarned = 0;
         if (!isWeekend && overtimeHours > 0) {
-          const firstTwoHours = Math.min(overtimeHours, 2); // Maksymalnie 2 pierwsze godziny
-          const remainingHours = Math.max(0, overtimeHours - 2); // Kolejne godziny (maksymalnie 3)
+          const firstTwoHours = Math.min(overtimeHours, 2);
+          const remainingHours = Math.max(0, overtimeHours - 2);
 
           overtimeEarned += firstTwoHours * overtimeRate1; // Dodatek 50%
           overtimeEarned += remainingHours * overtimeRate2; // Dodatek 100%
