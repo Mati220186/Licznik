@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("Skrypt uruchomiony"); // Sprawdzenie, czy skrypt się ładuje
+  console.log("Skrypt uruchomiony");
 
   const salaryForm = document.getElementById("salaryForm");
   const counterDisplay = document.getElementById("counter");
@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   salaryForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    console.log("Formularz przesłany"); // Sprawdzenie, czy nasłuchiwanie działa
+    console.log("Formularz przesłany");
 
     // Pobieranie danych
     const grossSalary = parseFloat(
@@ -40,31 +40,40 @@ document.addEventListener("DOMContentLoaded", () => {
     const hourlyRate = grossSalary / (workdays * 8);
     console.log(`Stawka godzinowa: ${hourlyRate.toFixed(5)} PLN`);
 
-    // Obliczenie czasu rozpoczęcia pracy
+    // Obliczenie czasu rozpoczęcia pracy w minutach
     const startHourInMinutes =
       parseInt(startHour.split(":")[0], 10) * 60 +
       parseInt(startHour.split(":")[1], 10);
 
-    if (intervalId) clearInterval(intervalId);
+    if (intervalId) clearInterval(intervalId); // Zatrzymanie poprzedniego licznika, jeśli już działał
 
+    // Obliczenie natychmiastowej kwoty od godziny rozpoczęcia pracy do teraz
+    const nowInMinutes = now.getHours() * 60 + now.getMinutes();
     let currentAmount = 0;
 
-    // Licznik
-    const updateCounter = () => {
-      const now = new Date();
-      const nowInMinutes = now.getHours() * 60 + now.getMinutes();
+    if (nowInMinutes >= startHourInMinutes) {
+      const elapsedMinutes = nowInMinutes - startHourInMinutes; // Minuty od rozpoczęcia pracy
+      currentAmount = (elapsedMinutes / 60) * hourlyRate; // Zarobiona kwota
+      console.log(`Kwota wyliczona od razu: ${currentAmount.toFixed(5)} PLN`);
+    }
 
-      if (nowInMinutes >= startHourInMinutes) {
-        const elapsedMinutes = nowInMinutes - startHourInMinutes;
-        currentAmount = (elapsedMinutes / 60) * hourlyRate;
-        counterDisplay.textContent = `${currentAmount.toFixed(5)} PLN`;
-        console.log(`Zaktualizowano licznik: ${currentAmount.toFixed(5)} PLN`);
-      } else {
-        counterDisplay.textContent = "0.00 PLN";
-      }
+    // Wyświetlenie kwoty wyliczonej do chwili obecnej
+    counterDisplay.textContent = `${currentAmount.toFixed(5)} PLN`;
+
+    // Rozpoczęcie płynnego liczenia od tej kwoty
+    let lastUpdate = Date.now();
+
+    const updateCounter = () => {
+      const now = Date.now();
+      const elapsedMilliseconds = now - lastUpdate; // Czas od ostatniej aktualizacji
+      const earnedThisTick = (elapsedMilliseconds / 3600000) * hourlyRate; // Przeliczenie milisekund na godziny
+      currentAmount += earnedThisTick;
+
+      // Zaktualizowanie licznika
+      counterDisplay.textContent = `${currentAmount.toFixed(5)} PLN`;
+      lastUpdate = now; // Zapisanie czasu tej aktualizacji
     };
 
-    updateCounter(); // Pokazuje od razu aktualną wartość
-    intervalId = setInterval(updateCounter, 100); // Aktualizuje co sekundę
+    intervalId = setInterval(updateCounter, 100); // Aktualizacja co 100 ms
   });
 });
