@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const workdays = daysInMonth - 8; // Zakładamy 8 dni wolnych (soboty i niedziele)
 
     const hourlyRate = grossSalary / (workdays * 8);
-    console.log(`Stawka godzinowa: ${hourlyRate.toFixed(2)} PLN`);
+    console.log(`Stawka godzinowa: ${hourlyRate.toFixed(5)} PLN`);
 
     // Obliczenie czasu rozpoczęcia pracy
     const startHourInMinutes =
@@ -65,6 +65,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     updateCounter(); // Pokazuje od razu aktualną wartość
-    intervalId = setInterval(updateCounter, 1000); // Aktualizuje co sekundę
+    intervalId = setInterval(updateCounter, 100); // Aktualizuje co sekundę
   });
 });
